@@ -12,8 +12,8 @@ def fmt_trace_line(line, db):
     if not fmt:
         return
     rest = line[fn_start + 1:]
-    fn_end = rest.find(')')
+    fn_end = rest.find(')')  # end of the call
     args = map(lambda x: x.strip(), rest[:fn_end].split(','))
     eq_pos = rest[fn_end:].find('=')
-    ret = rest[fn_end + eq_pos + 1:].strip()
-    return fmt.format(*(args + [ret]))
+    ret = rest[fn_end + eq_pos + 1:].strip()  # return value is after the `=` sign
+    return fmt.format(*(args + [ret]))  # format [arg1, arg2, ..., argN, ret] into the string
