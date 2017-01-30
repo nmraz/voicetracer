@@ -2,7 +2,7 @@
 
 from db_handler import DBHandler
 from trace_parsing import fmt_trace_line
-import os
+import subprocess
 import threading
 import time
 
@@ -37,7 +37,7 @@ class Watcher(object):
                 if new_line:
                     msg = fmt_trace_line(new_line, db)
                     if msg:
-                        os.system('espeak "{}"'.format(msg))
+                        subprocess.call(['espeak', '"{}"'.format(msg)])
                 else:
                     with self.quit_lock:
                         if self.should_quit:
