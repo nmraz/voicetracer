@@ -1,9 +1,10 @@
 #!/usr/bin/python
 
+from db_handler import DBHandler
+from trace_parsing import fmt_trace_line
 import os
 import threading
 import time
-from db_handler import DBHandler
 
 class Watcher(object):
     '''Watches a trace file and speaks whenever a known systcall is encountered'''
@@ -34,7 +35,9 @@ class Watcher(object):
             while True:
                 new_line = trace.readline()
                 if new_line:
-                    print new_line  # TODO: handle new message here
+                    msg = fmt_trace_line(new_line, db)
+                    if msg:
+                        os.system('espeak "{}"'.format(msg))
                 else:
                     with self.quit_lock:
                         if self.should_quit:
