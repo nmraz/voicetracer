@@ -16,8 +16,7 @@ def succeeded(ret_err):
 
 def fmt_trace_line(line, db):
     '''Parses the line from the trace, and formats it according to the appropriate entry in `db`'''
-    # TODO: do a real parse here, not just a bunch of splits
-    # (simple splitting doesn't play nicely with string literals)
+    # NOTE: this is horrendously broken and should be replaced with a real parse!!!
     fn_start = line.find('(')
     if fn_start == -1:
         return  # some other message (not a function call)
