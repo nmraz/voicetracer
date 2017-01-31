@@ -37,7 +37,7 @@ class Watcher(object):
                 if new_line:
                     msg = fmt_trace_line(new_line, db)
                     if msg:
-                        subprocess.call(['espeak', '"{}"'.format(msg)])
+                        subprocess.call(['espeak', '{}'.format(msg)])
                 else:
                     with self.quit_lock:
                         if self.should_quit:
