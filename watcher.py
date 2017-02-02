@@ -1,16 +1,21 @@
 #!/usr/bin/python
 
-from db_handler import DBHandler
-from trace_parsing import fmt_trace_line
 import os
 import subprocess
 import threading
 import time
 
+from db_handler import DBHandler
+from trace_parsing import fmt_trace_line
+
+
 class Watcher(object):
-    '''Watches a trace file and speaks whenever a known systcall is encountered'''
+    """Watches a trace file and speaks whenever a known systcall is
+    encountered
+    """
+
     def __init__(self, db_path, trace_path):
-        '''Initializes with the given trace file and database'''
+        """Initializes with the given trace file and database"""
         self.db_path = db_path
         self.trace_path = trace_path
         self.thr = threading.Thread(target = lambda: self.run())
@@ -20,22 +25,23 @@ class Watcher(object):
         self.quit_lock = threading.Lock()  # protects `should_quit`
 
     def __enter__(self):
-        '''Starts the watcher thread and creates resources'''
+        """Starts the watcher thread and creates resources"""
         self.thr.start()
 
     def __exit__(self, exc_type, exc, trace):
-        '''Requests the watcher to quit and frees its resources'''
+        """Requests the watcher to quit and frees its resources"""
         with self.quit_lock:
             self.should_quit = 2 if exc_type else 1
         try:
+            # workaround to allow KeyboardInterrupt during join
             while self.thr.is_alive():
-                self.thr.join(0.0001)  # workaround to allow KeyboardInterrupt during join
+                self.thr.join(0.0001)
         except:
             with self.quit_lock:
                 self.should_quit = 2
 
     def run(self):
-        '''The actual thread callback'''
+        """The actual thread callback"""
         db = DBHandler(self.db_path)
         trace = open(self.trace_path, 'r')
         with trace, db:
@@ -50,7 +56,7 @@ class Watcher(object):
                     msg = fmt_trace_line(new_line, db)
                     if msg:
                         subprocess.call(['espeak', '{}'.format(msg)],
-                            preexec_fn = lambda: os.setpgrp())  # detach from main process group
+                            preexec_fn = lambda: os.setpgrp())
                 else:
                     if should_quit:
                         return
