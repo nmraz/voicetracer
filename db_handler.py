@@ -7,7 +7,7 @@ class DBHandler(object):
     """Holds a database connection and allows for descriptions to be
     found for corresponding syscall names
     """
-    
+
     def __init__(self, path):
         """Initializes the connection with the database specified by `path`"""
         self.con = sql.connect(path)
@@ -28,3 +28,4 @@ class DBHandler(object):
         row = cur.fetchone()  # there shouldn't be more than one entry anyway
         if row:
             return row[0]
+        return ''
