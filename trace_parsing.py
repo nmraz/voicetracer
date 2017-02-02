@@ -2,6 +2,8 @@
 
 import re
 
+from special_handlers import handlers
+
 
 class Stream(object):
     """Represents a character stream and a token position inside it"""
@@ -219,7 +221,13 @@ def fmt_trace_line(line, db):
     if not stream.eat_tok('('):  # not a function call
         return
     fmt = db.lookup(name)
-    if not fmt:  # not in the database
+    if not fmt and not name in handlers:  # nothing to do
         return
+    additional_args = {}
     args, ret, err = parse_sys_call(stream)
-    return fmt.format(*args, ret = ret, succeeded = succeeded(ret, err))
+    if name in handlers:
+        if not handlers[name](args, ret, err, additional_args):
+            # the handler bailed out
+            return
+    return fmt.format(*args, ret = ret, succeeded = succeeded(ret, err),
+                      **additional_args)
